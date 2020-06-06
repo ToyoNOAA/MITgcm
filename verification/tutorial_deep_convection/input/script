@@ -1,0 +1,22 @@
+#!/bin/csh
+#SBATCH -A gfdl_o
+#SBATCH -J eady
+#SBATCH --clusters=c3
+#SBATCH --nodes=1 
+#SBATCH -t 1:00:00 
+
+module unload PrgEnv-intel
+
+module load PrgEnv-pgi
+
+cd /lustre/f2/scratch/Oluwatoyosi.Sadare
+
+mkdir test
+
+cd test
+
+cp /ncrc/home2/Oluwatoyosi.Sadare/MITgcm/verification/tutorial_deep_convection/input/* .
+
+srun --ntasks=28 --cpus-per-task=1 ./mitgcmuv
+
+./mitgcmuv > output.txt

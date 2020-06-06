@@ -1,65 +1,54 @@
 % This is a matlab script that generates the input data
 
 % Dimensions of grid
-nx=100;
-ny=100;
-nz=50;
+nx=100.0; ny=100.0; nz=50.0;
 % Nominal depth of model (meters)
-H=1000;
-% Size of domain
-Lx=2.0e3;
-% Radius of cooling disk (m)
-Rc=600.;
-% Horizontal resolution (m)
-dx=Lx/nx;
+H=1000.0;
+% Size of domain (m)
+Lx=2.0e3; Ly=2.0e3;
+% Resolution (m)
+dx=Lx/nx; dy=Ly/ny; dz=H/nz;
 % Rotation
 f=1.e-4;
 % Stratification
-N=0.0*(f*Rc/H);
-% surface temperature
+N=0.0;
+% Surface temperature
 Ts=20.;
-% Flux : Cooling disk & noise added to cooling
-Qo=800; Q1=10;
-
+% Lapse rate
+dTdz=-0.01;
 % Gravity
 g=10.;
 % E.O.S.
-alpha=2.e-4;
+alpha=2.e-4; Tz=N^2/(g*alpha);
 
-Tz=N^2/(g*alpha)
-
-dz=H/nz;
+% Print vertical levels for /input/data
 sprintf('delZ = %d * %7.6g,',nz,dz)
 
-x=(1:nx)*dx;x=x-mean(x);
-y=(1:ny)*dx;y=y-mean(y);
-z=-dz/2:-dz:-H;
+% Initial temperature and velocity distributions
+x=zeros(nx,1); y=zeros(ny,1); z=zeros(nz,1);
 
-% Temperature profile
-Tref=Ts+Tz*z-mean(Tz*z);
-[sprintf('Tref =') sprintf(' %8.6g,',Tref)]
+for i=1:nx
+        x(i)=(i-1)*dx;
+end
+for i=1:ny
+	y(i)=(i-1)*dy;
+end
+for i=1:nz
+	z(i)=(i-1)*dz;
+end
 
-% Surface heat flux : refine the grid (by 3 x 3) to assign mean heat flux
-Q=Qo+Q1*(0.5+rand([nx,ny]));
-Qc=zeros(nx,ny);
-xc=x'*ones(1,ny); yc=ones(nx,1)*y; 
-for j=-1:1, for i=-1:1,
- xs=xc+dx*i/3 ; ys=yc+dx*j/3; r2=xs.*xs+ys.*ys;
- qs=Q/9; qs( find(r2 > Rc*Rc) )=0.;
- Qc=Qc+qs;
-end ; end
-%fid=fopen('Qnet_p64.bin','w','b'); fwrite(fid,Qc,'real*8'); fclose(fid);
- fid=fopen('Qnet_p32.bin','w','b'); fwrite(fid,Qc,'real*4'); fclose(fid);
+T=zeros(nx,ny,nz); U=zeros(nx,ny,nz); V=zeros(nx,ny,nz);
 
-var=2*pi*[0:1000]/1000; xl=Rc*cos(var); yl=Rc*sin(var);
-figure(1);clf;
-var=Qc; var(find(var==0))=NaN;
-imagesc(x,y,var'); set(gca,'YDir','normal');
-caxis([-15 820]);
-%change_colmap(-1);
-colorbar
-grid;
-hold on
-L=line(xl,yl);
-set(L,'color',[0 0 0]);
-hold off ;
+for k=1:nz
+	for j=1:ny
+		for i=1:nx
+			T(i,j,k)=Ts+dTdz*z(k);
+			U(i,j,k)=0.0;
+			V(i,j,k)=0.0;
+		end
+	end
+end
+
+fid=fopen('T.bin','w','b'); fwrite(fid,T,'real*4'); fclose(fid);
+fid=fopen('U.bin','w','b'); fwrite(fid,U,'real*4'); fclose(fid);
+fid=fopen('V.bin','w','b'); fwrite(fid,V,'real*4'); fclose(fid);

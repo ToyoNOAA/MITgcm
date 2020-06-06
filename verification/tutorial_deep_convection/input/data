@@ -61,9 +61,9 @@
 
 # Input datasets
  &PARM05
- surfQnetFile=  'Qnet_p32.bin',
- hydrogThetaFile='T.120mn.bin',
- pSurfInitFile='Eta.120mn.bin',
- uVelInitFile =  'U.120mn.bin',
- vVelInitFile =  'V.120mn.bin',
+# surfQnetFile=  'Qnet_p32.bin',
+ hydrogThetaFile='T.bin',
+# pSurfInitFile='Eta.120mn.bin',
+ uVelInitFile =  'U.bin',
+ vVelInitFile =  'V.bin',
  &
