@@ -1,11 +1,11 @@
 % This is a matlab script that generates the input data
 
 % Dimensions of grid
-nx=100.0; ny=100.0; nz=50.0;
+nx=200.0; ny=200.0; nz=50.0;
 % Nominal depth of model (meters)
 H=1000.0;
 % Size of domain (m)
-Lx=2.0e3; Ly=2.0e3;
+Lx=8.0e4; Ly=8.0e4;
 % Resolution (m)
 dx=Lx/nx; dy=Ly/ny; dz=H/nz;
 % Rotation

@@ -20,8 +20,8 @@
  rhoConst=1000.,
  rhoNil=1000.,
  heatCapacity_Cp=4000.,
-#rigidLid=.TRUE.,
- implicitFreeSurface=.TRUE.,
+ rigidLid=.TRUE.,
+#implicitFreeSurface=.TRUE.,
 #exactConserv=.TRUE.,
  eosType='LINEAR',
  nonHydrostatic=.TRUE.,
@@ -54,8 +54,8 @@
 # Gridding parameters
  &PARM04
  usingCartesianGrid=.TRUE.,
- dXspacing=20.,
- dYspacing=20.,
+ dXspacing=400.,
+ dYspacing=400.,
  delZ=50*20.,
  &
 
