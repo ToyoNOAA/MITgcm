@@ -21,6 +21,14 @@ g=10.;
 % E.O.S.
 alpha=2.e-4; Tz=N^2/(g*alpha);
 
+% Set vortex radius, vertical decay scale and max speed
+R=1.0e4; Ht=250; Um=0.1;
+
+% Compute vortex horizontal decay scale, and velocity and temperature amplitudes
+Lt=2*R^2;
+A=sqrt(exp(1))*Um/R;
+t=A*f*Lt/(2*g*alpha*Ht);
+
 % Print vertical levels for /input/data
 sprintf('delZ = %d * %7.6g,',nz,dz)
 
@@ -42,9 +50,11 @@ T=zeros(nx,ny,nz); U=zeros(nx,ny,nz); V=zeros(nx,ny,nz);
 for k=1:nz
 	for j=1:ny
 		for i=1:nx
-			T(i,j,k)=Ts+dTdz*z(k);
-			U(i,j,k)=0.0;
-			V(i,j,k)=0.0;
+			r(i,j) = norm([x(i)-Lx/2 y(j)-Ly/2]);
+			T(i,j,k)=Ts+dTdz*z(k); %background temperature
+			T(i,j,k)=T(i,j,k)+t*exp(-z(k)/Ht)*exp(-r(i,j)^2/Lt); %perturbed temperature
+			U(i,j,k)=-A*y(j)*exp(-z(k)/Ht)*exp(-r(i,j)^2/Lt);
+			V(i,j,k)=A*x(i)*exp(-z(k)/Ht)*exp(-r(i,j)^2/Lt);
 		end
 	end
 end
