@@ -21,6 +21,12 @@ g=10.;
 % E.O.S.
 alpha=2.e-4; Tz=N^2/(g*alpha);
 
+% Set vortex radius, vertical decay scale and maximum velocity
+R=Lx/8; Ht=250; Um=0.1;
+
+% Compute correction term, vorticity and temperature amplitude
+C=R^2*(log(R^2)-1); w=-2*Um/R; t=-w*f/(4*g*alpha*Ht);
+
 % Print vertical levels for /input/data
 sprintf('delZ = %d * %7.6g,',nz,dz)
 
@@ -42,9 +48,17 @@ T=zeros(nx,ny,nz); U=zeros(nx,ny,nz); V=zeros(nx,ny,nz);
 for k=1:nz
 	for j=1:ny
 		for i=1:nx
+			r(i,j)=norm([x(i)-Lx/2 y(j)-Ly/2]);
 			T(i,j,k)=Ts+dTdz*z(k);
-			U(i,j,k)=0.0;
-			V(i,j,k)=0.0;
+			if r(i,j) < R
+				U(i,j,k)=-(w/2)*(y(j)-Ly/2)*exp(-z(k)/Ht);
+				V(i,j,k)=(w/2)*(x(i)-Lx/2)*exp(-z(k)/Ht);
+				T(i,j,k)=T(i,j,k)+t*(r(i,j)^2+C)*exp(-z(k)/Ht);
+			else
+				U(i,j,k)=-(w*R^2/2)*(y(j)-Ly/2)*exp(-z(k)/Ht)/r(i,j)^2;
+				V(i,j,k)=(w*R^2/2)*(x(i)-Lx/2)*exp(-z(k)/Ht)/r(i,j)^2;
+				T(i,j,k)=T(i,j,k)+t*R^2*log(r(i,j)^2)*exp(-z(k)/Ht);
+			end
 		end
 	end
 end
